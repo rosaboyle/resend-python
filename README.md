@@ -1,57 +1,70 @@
-# Resend Python SDK
+# Minimal MCP Server
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Build](https://github.com/drish/resend-py/actions/workflows/ci.yaml/badge.svg)
-[![codecov](https://codecov.io/gh/drish/resend-py/branch/main/graph/badge.svg?token=GGD39PPFM0)](https://codecov.io/gh/drish/resend-py)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![PyPI](https://img.shields.io/pypi/v/resend)](https://pypi.org/project/resend/)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/resend)](https://pypi.org/project/resend)
+This is the minimal MCP (Model Context Protocol) server implementation with Streamable HTTP transport.
 
----
+## Features
 
-## Installation
+- **One Resource**: `server-info` - Provides JSON information about the server
+- **One Tool**: `echo` - Echoes back messages with metadata
+- **One Prompt**: `greeting` - Generates personalized greeting prompts
+- **Streamable HTTP Transport**: Modern MCP transport protocol
+- **TypeScript**: Full type safety with ES modules
 
-To install Resend Python SDK, simply execute the following command in a terminal:
+## Quick Start
 
-```
-pip install resend
-```
+```bash
+# Install dependencies
+npm install
 
-## Setup
+# Start development server
+npm run dev
 
-First, you need to get an API key, which is available in the [Resend Dashboard](https://resend.com).
-
-```py
-import resend
-import os
-
-resend.api_key = "re_yourkey"
+# Or build and run production
+npm run build
+npm start
 ```
 
-## Example
+## API Endpoints
 
-You can get an overview about all parameters in the [Send Email](https://resend.com/docs/api-reference/emails/send-email) API reference.
+- **MCP Endpoint**: `POST http://localhost:3000/mcp`
+- **Health Check**: `GET http://localhost:3000/health`
+- **Server Info**: `GET http://localhost:3000/`
 
-```py
-import os
-import resend
+## Environment Variables
 
-resend.api_key = "re_yourkey"
+Copy `.env.example` to `.env` and configure:
 
-params: resend.Emails.SendParams = {
-    "from": "onboarding@resend.dev",
-    "to": ["delivered@resend.dev"],
-    "subject": "hi",
-    "html": "<strong>hello, world!</strong>",
-    "reply_to": "to@gmail.com",
-    "bcc": "bcc@resend.dev",
-    "cc": ["cc@resend.dev"],
-    "tags": [
-        {"name": "tag1", "value": "tagvalue1"},
-        {"name": "tag2", "value": "tagvalue2"},
-    ],
-}
-
-email: resend.Email = resend.Emails.send(params)
-print(email)
+```env
+PORT=3000
+MCP_SERVER_NAME=minimal-mcp
+MCP_SERVER_VERSION=1.0.0
 ```
+
+## MCP Capabilities
+
+### Resource: `server-info`
+- **URI**: `info://server`
+- **Description**: Returns server information and metadata
+
+### Tool: `echo`
+- **Input**: `{ message: string }`
+- **Description**: Echoes back the message with timestamp and metadata
+
+### Prompt: `greeting`
+- **Arguments**: `{ name: string, style?: "formal" | "casual" | "friendly" }`
+- **Description**: Generates personalized greeting prompts
+
+## Usage with MCP Clients
+
+Connect your MCP client to `http://localhost:3000/mcp` using the Streamable HTTP transport.
+
+## Architecture
+
+```
+src/
+├── server.ts          # Express server with Streamable HTTP transport
+├── mcp-server.ts      # MCP server configuration
+└── minimal/
+    ├── resource.ts    # Single resource implementation
+    ├── tool.ts        # Single tool implementation
+    └── prompt.ts      # Single prompt implementation

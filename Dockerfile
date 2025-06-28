@@ -1,14 +1,21 @@
-FROM python:3.8.0
+FROM node:20-alpine
 
-RUN pip install --upgrade pip
+WORKDIR /app
 
-ADD requirements.txt requirements.txt
+# Copy package files
+COPY package*.json ./
 
-RUN pip install -r requirements.txt
+# Install all dependencies
+RUN npm install
 
-RUN pip install tox
+# Copy source code
+COPY . .
 
-ENV APP_HOME /app
+# Build the TypeScript project
+RUN npm run build
 
-ADD . $APP_HOME
-WORKDIR $APP_HOME
+# Expose port 3001
+EXPOSE 3001
+
+# Start the application
+CMD ["npm", "start"]
